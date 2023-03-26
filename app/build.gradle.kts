@@ -38,12 +38,7 @@ android {
 
 dependencies {
 
-    //Core
-    implementation("androidx.core:core-ktx:1.9.0")
-    //App Compat
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    //UI Components
-    implementation("com.google.android.material:material:1.8.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation(project(":data"))
+    implementation(project(":domain"))
+    implementation(project(":presentation"))
 }
