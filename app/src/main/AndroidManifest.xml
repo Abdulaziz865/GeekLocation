@@ -11,6 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme"
         tools:targetApi="31">
+
+        <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyB85kURzExUe7Xat_6tOdU1DzHOZAmp460" />
         <activity
             android:name="com.example.presentation.ui.activity.MainActivity"
             android:exported="true">
