@@ -15,8 +15,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 class GoogleMapFragment : Fragment(), OnMapReadyCallback {
-
-    private lateinit var mMap: GoogleMap
     private lateinit var binding: FragmentGoogleMapBinding
 
     override fun onCreateView(
@@ -26,16 +24,21 @@ class GoogleMapFragment : Fragment(), OnMapReadyCallback {
         binding = FragmentGoogleMapBinding.inflate(inflater, container, false)
         return binding.root
 
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val mapFragment = childFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        mapFragment.getMapAsync {
+            val karabalta = LatLng(42.82112116502111, 73.84416404971903)
+            it.addMarker(MarkerOptions().position(karabalta).title("Кара-Балта"))
+            it.moveCamera(CameraUpdateFactory.newLatLngZoom(karabalta, 13f))
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
 
-        val karabalta = LatLng(42.82112116502111, 73.84416404971903)
-        mMap.addMarker(MarkerOptions().position(karabalta).title("Кара-Балта"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(karabalta, 20f))
     }
 }
