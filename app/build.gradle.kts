@@ -42,7 +42,6 @@ android {
 
 dependencies {
 
-
     Dependencies.UiComponents.apply {
         // AppCompat
         implementation(appCompat)

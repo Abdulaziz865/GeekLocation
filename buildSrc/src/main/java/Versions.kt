@@ -11,7 +11,7 @@ object Versions {
     const val inject = "1"
     const val viewBinding = "1.5.8"
     const val glide = "4.14.2"
-    const val lifecycle = "2.6.0"
+    const val lifecycle = "2.6.1"
     const val navigation = "2.5.3"
     const val googleServices = "4.3.15"
     const val fireAuth = "21.2.0"
@@ -19,4 +19,7 @@ object Versions {
     const val playServicesAuth = "20.4.1"
     const val fireBom = "31.2.3"
     const val measurementApi = "21.2.1"
+    const val map = "18.1.0"
+    const val legasySupport = "1.0.0"
+    const val fireProtolite = "18.0.0"
 }

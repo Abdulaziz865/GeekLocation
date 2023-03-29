@@ -43,6 +43,8 @@ object Dependencies {
     object Lifecycles {
         const val lifecycles = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}"
         const val runtimeLifecycles = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
+        const val legasySupport = "androidx.legacy:legacy-support-v4:${Versions.legasySupport}"
+        const val lifecycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}    "
     }
 
     object Navigation {
@@ -56,5 +58,9 @@ object Dependencies {
         const val playServicesAuth = "com.google.android.gms:play-services-auth:${Versions.playServicesAuth}"
         const val bom = "com.google.firebase:firebase-bom:${Versions.fireBom}"
         const val measurementApi = "com.google.android.gms:play-services-measurement-api:${Versions.measurementApi}"
+    }
+
+    object Map {
+        const val map = "com.google.android.gms:play-services-maps:${Versions.map}"
     }
 }
