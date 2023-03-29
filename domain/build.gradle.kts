@@ -1,6 +1,8 @@
 plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    Plugins.apply {
+        id(javaLibrary)
+        id(kotlinJvm)
+    }
 }
 
 java {

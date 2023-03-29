@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "508480399199",
+    "project_id": "geeklocation-6e4b4",
+    "storage_bucket": "geeklocation-6e4b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:508480399199:android:99fbc1023278d8dd6378ea",
+        "android_client_info": {
+          "package_name": "com.example.geeklocation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "508480399199-33ego3d8n2gd8rd2fg351bv38eetdsq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvri5qJIwxLIkc7UW4ftZcmaP9MwjDL7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "508480399199-33ego3d8n2gd8rd2fg351bv38eetdsq0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

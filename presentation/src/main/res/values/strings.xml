@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">GeekLocation</string>
+    <string name="name">имя</string>
+    <string name="geeklocation">Добро пожаловать в \n GeekLocation</string>
+    <string name="google">Google</string>
+    <!--    <string name="default_web_client_id">713543694138-3cfk33s929mnbr7vcr7nis2eds7k01jm.apps.googleusercontent.com</string>-->
 </resources>
