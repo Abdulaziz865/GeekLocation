@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "508480399199",
-    "project_id": "geeklocation-6e4b4",
-    "storage_bucket": "geeklocation-6e4b4.appspot.com"
+    "project_number": "64319960618",
+    "project_id": "geeklocation-44a29",
+    "storage_bucket": "geeklocation-44a29.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:508480399199:android:99fbc1023278d8dd6378ea",
+        "mobilesdk_app_id": "1:64319960618:android:43a4d5d684a5bff7cff553",
         "android_client_info": {
           "package_name": "com.example.geeklocation"
         }
       },
       "oauth_client": [
         {
-          "client_id": "508480399199-33ego3d8n2gd8rd2fg351bv38eetdsq0.apps.googleusercontent.com",
+          "client_id": "64319960618-lncou571dqes2d3hmp6nnlfb9mma4ci3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.geeklocation",
+            "certificate_hash": "9342323856208fe50d527a4bbe984330ff7862ea"
+          }
+        },
+        {
+          "client_id": "64319960618-p17r8haqhi29uifemmqgga3b3hc0vfsm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBvri5qJIwxLIkc7UW4ftZcmaP9MwjDL7c"
+          "current_key": "AIzaSyDll_Bo3xQ8mgm92nq7XwvqkZW0zz_0NcE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "508480399199-33ego3d8n2gd8rd2fg351bv38eetdsq0.apps.googleusercontent.com",
+              "client_id": "64319960618-p17r8haqhi29uifemmqgga3b3hc0vfsm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

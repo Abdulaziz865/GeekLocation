@@ -71,6 +71,9 @@ dependencies {
         implementation(map)
     }
 
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.karumi:dexter:6.2.3")
+
     Dependencies.Lifecycles.apply {
         // Lifecycles
         implementation(lifecycles)
