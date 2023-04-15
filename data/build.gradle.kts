@@ -2,6 +2,8 @@ plugins {
     Plugins.apply {
         id(androidLibrary)
         id(kotlinLibrary)
+        id(hilt)
+        kotlin(kapt)
     }
 }
 
@@ -43,6 +45,12 @@ dependencies {
         implementation(appCompat)
         // Material Design
         implementation(material)
+    }
+
+    Dependencies.Hilt.apply {
+        //Hilt
+        implementation(hilt)
+        kapt(hiltCompiler)
     }
 
     implementation(project(":domain"))

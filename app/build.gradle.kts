@@ -2,7 +2,7 @@ plugins {
     Plugins.apply {
         id(application)
         kotlin(android)
-        // Kapt
+        id(hilt)
         kotlin(kapt)
         id(googleServicesPlugin)
     }
@@ -51,15 +51,15 @@ dependencies {
         implementation(constraint)
     }
 
-    Dependencies.Firebase.apply {
-        implementation(auth)
-        implementation(authKtx)
-        implementation(playServicesAuth)
-    }
-
     Dependencies.ViewBinding.apply {
         // ViewBindingPropertyDelegate
         implementation(viewBinding)
+    }
+
+    Dependencies.Hilt.apply {
+        //Hilt
+        implementation(hilt)
+        kapt(hiltCompiler)
     }
 
     implementation(project(":data"))

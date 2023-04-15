@@ -23,6 +23,7 @@
         <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyB85kURzExUe7Xat_6tOdU1DzHOZAmp460" />
+
         <activity
             android:name="com.example.presentation.ui.activity.MainActivity"
             android:exported="true">
@@ -32,5 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 </manifest>

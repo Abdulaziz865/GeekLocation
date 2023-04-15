@@ -5,4 +5,18 @@
     <string name="google">Google</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="default_web_client_id">64319960618-p17r8haqhi29uifemmqgga3b3hc0vfsm.apps.googleusercontent.com</string>
+    <string name="gps_status_enabled">"GPS is Enabled"</string>
+    <string name="gps_status_disabled">"GPS is Disabled"</string>
+    <string name="isAuthorize">isAuthorize</string>
+    <string name="kara_balta_tostring">Кара-Балта</string>
+    <string name="denial_warning">Для этого приложения необходимо предоставить требуемое разрешение!</string>
+    <string name="attention_title">Внимание</string>
+    <string name="provide_button">Предоставить</string>
+    <string name="cansel_button">Отмена</string>
+    <string name="dont_show_again_button">Не удалось получить данные!</string>
+    <string name="settings_action_button">Настройки</string>
+    <string name="packages">package</string>
+    <string name="color_settings_button">#F50057</string>
+    <string name="empty_edit_text">Заполните шкалу</string>
+    <string name="fatal_exception_authorize">An error has occurred, please try again later</string>
 </resources>

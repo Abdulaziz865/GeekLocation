@@ -1,21 +1,32 @@
 package com.example.presentation.ui.fragments
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.location.Geocoder
+import android.graphics.Color
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.presentation.R
 import com.example.presentation.databinding.FragmentGoogleMapBinding
+import com.example.presentation.extensions.accessFineLocationAsk
+import com.example.presentation.extensions.bothAsk
+import com.example.presentation.extensions.writeExternalStorageAsk
+import com.example.presentation.utils.GpsStatus
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -25,164 +36,248 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
-import java.io.IOException
-import java.util.*
+import com.google.android.gms.tasks.Task
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCallback {
 
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+
+            var isDenied = false
+            var isDontAsk = bothAsk
+            var isBoath = false
+
+            val accessFineLocation = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
+            val writeExternalStorage = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE]
+
+            if (accessFineLocation == true) {
+                val gpsEnabled =
+                    requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                if (gpsEnabled.isProviderEnabled(LocationManager.GPS_PROVIDER) && ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    binding.btnStart.isVisible = false
+                    binding.closerCardView.isVisible = false
+                }
+            }
+            else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                ) {
+
+                    isDenied = true
+                }
+                else {
+
+                    isDontAsk = accessFineLocationAsk
+                    isBoath = true
+                }
+            }
+
+            if (writeExternalStorage == true) {
+                val gpsEnabled =
+                    requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                if (gpsEnabled.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                    && ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    binding.btnStart.isVisible = false
+                    binding.closerCardView.isVisible = false
+                }
+            }
+            else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                ) {
+                    isDenied = true
+                }
+                else {
+                    isDontAsk = writeExternalStorageAsk
+
+                    if (isBoath){
+                        isDontAsk = bothAsk
+                    }
+                }
+            }
+
+            if (isDenied) {
+                val alertDialog: AlertDialog.Builder =
+                    AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
+
+                alertDialog.setMessage(getString(R.string.denial_warning))
+                    .setTitle(getString(R.string.attention_title))
+
+                alertDialog.setPositiveButton(getString(R.string.provide_button)) { dialog, which ->
+                    requestStoragePermission()
+                }
+                alertDialog.setNegativeButton(getString(R.string.cansel_button)) { dialog, which ->
+                    Log.e("permissions", "Permission Denied")
+                }
+                alertDialog.show()
+            }
+
+            when (isDontAsk) {
+                bothAsk -> {
+                    Snackbar.make(
+                        binding.btnStart,
+                        getString(R.string.dont_show_again_button) + " Оба",
+                        Snackbar.LENGTH_LONG
+                    ).setAction(getString(R.string.settings_action_button)) {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri: Uri = Uri.fromParts(
+                            getString(R.string.packages), activity?.packageName, null
+                        )
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                        .setActionTextColor(Color.parseColor(getString(R.string.color_settings_button)))
+                        .show()
+                }
+                accessFineLocationAsk -> {
+                    Snackbar.make(
+                        binding.btnStart,
+                        getString(R.string.dont_show_again_button) + " Местоположение",
+                        Snackbar.LENGTH_LONG
+                    ).setAction(getString(R.string.settings_action_button)) {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri: Uri = Uri.fromParts(
+                            getString(R.string.packages), activity?.packageName, null
+                        )
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                        .setActionTextColor(Color.parseColor(getString(R.string.color_settings_button)))
+                        .show()
+                }
+                writeExternalStorageAsk -> {
+                    Snackbar.make(
+                        binding.btnStart,
+                        getString(R.string.dont_show_again_button) + " Читание Данных",
+                        Snackbar.LENGTH_LONG
+                    ).setAction(getString(R.string.settings_action_button)) {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri: Uri = Uri.fromParts(
+                            getString(R.string.packages), activity?.packageName, null
+                        )
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                        .setActionTextColor(Color.parseColor(getString(R.string.color_settings_button)))
+                        .show()
+                }
+            }
+        }
     private lateinit var locationRequest: LocationRequest
-    private lateinit var googleMap: GoogleMap
-    private var isPermissionGranter: Boolean? = null
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private val viewModel: GoogleMapViewModel by viewModels()
     private val binding by viewBinding(FragmentGoogleMapBinding::bind)
+    private val gpsObserver = Observer<GpsStatus> { status ->
+        updateGpsCheckUI(status)
+    }
+
+    private fun updateGpsCheckUI(status: GpsStatus) = with(binding) {
+        when (status) {
+            is GpsStatus.Enabled -> {
+                if (ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    Log.e("gpsEnabled", "ON")
+                    btnStart.isVisible = false
+                    closerCardView.isVisible = false
+                }
+            }
+
+            is GpsStatus.Disabled -> {
+                Log.e("gpsEnabled", "OFF")
+                btnStart.isVisible = true
+                closerCardView.isVisible = true
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialize()
+        subscribeToGpsListener()
         checkPermission()
-//        checkLocationPermission()
     }
 
     private fun initialize() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        val mapFragment = childFragmentManager
-            .findFragmentById(R.id.maps) as SupportMapFragment
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
+
+        val mapFragment = childFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
+
         mapFragment.getMapAsync {
-            val karabalta = LatLng(42.82112116502111, 73.84416404971903)
-            it.addMarker(MarkerOptions().position(karabalta).title("Кара-Балта"))
+            val karabalta = LatLng(/* latitude = */ 42.82112116502111, /* longitude = */
+                73.84416404971903
+            )
+            it.addMarker(
+                MarkerOptions().position(karabalta).title(getString(R.string.kara_balta_tostring))
+            )
             it.moveCamera(CameraUpdateFactory.newLatLngZoom(karabalta, 13f))
         }
     }
 
+    private fun subscribeToGpsListener() =
+        viewModel.gpsStatusLiveData(requireActivity()).observe(viewLifecycleOwner, gpsObserver)
+
     private fun checkPermission() {
         binding.btnStart.setOnClickListener {
-            checkLocationPermission()
-            Dexter.withContext(requireContext()).withPermission(Manifest.permission.ACCESS_FINE_LOCATION).withListener(object : PermissionListener {
-                override fun onPermissionGranted(response: PermissionGrantedResponse) {
-                    isPermissionGranter = true
-                    Toast.makeText(requireContext(), "Permission Granter", Toast.LENGTH_SHORT).show()
-                    checkLocationPermission()
-                }
-
-                override fun onPermissionDenied(response: PermissionDeniedResponse) {
-//                    val  intent : Intent = Intent()
-//                    intent.action = Settings.ACTION_APPLICATION_SETTINGS
-//                    val uri : Uri = Uri.fromParts("package" , "" , "")
-//                    intent.data = uri
-//                    startActivity(intent)
-                    if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        Toast.makeText(requireContext(), "Checked", Toast.LENGTH_SHORT).show()
-                    }
-                    Toast.makeText(requireContext(), "Denied", Toast.LENGTH_SHORT).show()
-                }
-
-                override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
-                    token?.continuePermissionRequest()
-                    Toast.makeText(requireContext(), "Now", Toast.LENGTH_SHORT).show()
-                }
-            }).check()
+            if (ContextCompat.checkSelfPermission(
+                    requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                    requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestStoragePermission()
+            } else {
+                Log.e("permissions", "Always Granted")
+                checkGPS()
+            }
         }
-
     }
 
-    private fun checkLocationPermission() {
-        checkGPS()
-//        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            // Already Grant
-//            checkGPS()
-//
-//        } else {
-//            //Denied
-//
-//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
-//        }
-    }
     private fun checkGPS() {
-        locationRequest = LocationRequest.create()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 5000
-        locationRequest.fastestInterval = 2000
+        locationRequest = LocationRequest.Builder(5000).setGranularity(Granularity.GRANULARITY_FINE)
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY).setMinUpdateDistanceMeters(100F).build()
 
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+            .setAlwaysShow(true).build()
 
-        builder.setAlwaysShow(true)
+        val task: Task<LocationSettingsResponse> =
+            LocationServices.getSettingsClient(requireContext()).checkLocationSettings(builder)
 
-        val result = LocationServices.getSettingsClient(
-            requireContext()
-        )
-
-            .checkLocationSettings(builder.build())
-
-        result.addOnCompleteListener{ task ->
+        task.addOnCompleteListener {
 
             try {
-                val response = task.getResult(
-                    ApiException::class.java
-                )
+                it.getResult(ApiException::class.java)
 
-                getUserLocation()
-            }
-            catch (e : ApiException){
-                e.printStackTrace()
+            } catch (e: ApiException) {
 
-                when(e.statusCode){
-                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
-
-                        val resolveApiException = e as ResolvableApiException
-                        resolveApiException.startResolutionForResult(requireActivity() , 200)
-
-                    }catch (sendIntentException : IntentSender.SendIntentException){
-
-                    }
-
-                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
-
+                if (e.statusCode == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                    val resolvableApiException: ResolvableApiException = e as ResolvableApiException
+                    try {
+                        resolvableApiException.startResolutionForResult(
+                            requireActivity(), 101
+                        )
+                    } catch (sendIntentException: IntentSender.SendIntentException) {
+                        sendIntentException.printStackTrace()
                     }
                 }
-            }
-        }
-    }
-    private fun getUserLocation() {
 
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-
-            return
-        }
-        fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task ->
-            val location = task.result
-
-            if (location != null){
-                try {
-
-                    val geoCoder = Geocoder(requireContext() , Locale.getDefault())
-
-                    val address = geoCoder.getFromLocation(location.latitude, location.longitude, 1)
-
-                    val addres_line = address?.get(0)?.getAddressLine(0)
-
-                    Toast.makeText(requireContext(), addres_line, Toast.LENGTH_SHORT).show()
-
-                    val addres_location = address?.get(0)?.getAddressLine(0)
-
-                }catch (
-                    e : IOException
-                ){
-
+                if (e.statusCode == LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE) {
+                    Log.e("setting", "Setting not available")
                 }
             }
         }
@@ -190,5 +285,13 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
 
     override fun onMapReady(map: GoogleMap) {
 
+    }
+
+    private fun requestStoragePermission() {
+        requestPermission.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        )
     }
 }

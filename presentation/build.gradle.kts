@@ -2,6 +2,8 @@ plugins {
     Plugins.apply {
         id(androidLibrary)
         id(kotlinLibrary)
+        id(hilt)
+        kotlin(kapt)
     }
 }
 
@@ -33,6 +35,7 @@ android {
         jvmTarget = Config.jvmTarget
     }
     buildFeatures.viewBinding = true
+
 }
 
 dependencies {
@@ -46,6 +49,12 @@ dependencies {
         implementation(material)
         // UI Components
         implementation(constraint)
+    }
+
+    Dependencies.Hilt.apply {
+        //Hilt
+        implementation(hilt)
+        kapt(hiltCompiler)
     }
 
     Dependencies.Firebase.apply {
@@ -72,7 +81,6 @@ dependencies {
     }
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("com.karumi:dexter:6.2.3")
 
     Dependencies.Lifecycles.apply {
         // Lifecycles
