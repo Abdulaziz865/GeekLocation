@@ -1,4 +1,4 @@
-package com.example.presentation.ui.fragments
+package com.example.presentation.ui.fragments.home
 
 import android.Manifest
 import android.app.AlertDialog
@@ -25,6 +25,7 @@ import com.example.presentation.R
 import com.example.presentation.databinding.FragmentGoogleMapBinding
 import com.example.presentation.extensions.accessFineLocationAsk
 import com.example.presentation.extensions.bothAsk
+import com.example.presentation.extensions.nullAsk
 import com.example.presentation.extensions.writeExternalStorageAsk
 import com.example.presentation.utils.GpsStatus
 import com.google.android.gms.common.api.ApiException
@@ -47,7 +48,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
 
             var isDenied = false
-            var isDontAsk = bothAsk
+            var isDontAsk = nullAsk
             var isBoath = false
 
             val accessFineLocation = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
@@ -172,6 +173,9 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
                         .setActionTextColor(Color.parseColor(getString(R.string.color_settings_button)))
                         .show()
                 }
+                else -> {
+
+                }
             }
         }
     private lateinit var locationRequest: LocationRequest
@@ -249,11 +253,15 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
     }
 
     private fun checkGPS() {
-        locationRequest = LocationRequest.Builder(5000).setGranularity(Granularity.GRANULARITY_FINE)
-            .setPriority(Priority.PRIORITY_HIGH_ACCURACY).setMinUpdateDistanceMeters(100F).build()
+        locationRequest = LocationRequest.Builder(5000)
+            .setGranularity(Granularity.GRANULARITY_FINE)
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+            .setMinUpdateDistanceMeters(100F)
+            .build()
 
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-            .setAlwaysShow(true).build()
+        val builder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+            .build()
 
         val task: Task<LocationSettingsResponse> =
             LocationServices.getSettingsClient(requireContext()).checkLocationSettings(builder)
