@@ -1,10 +1,10 @@
 package com.example.presentation.extensions
 
-import androidx.fragment.app.Fragment
-
-val Fragment.bothAsk: String
+val nullAsk: String
+    get() = "NULL"
+val bothAsk: String
     get() = "BOTH"
-val Fragment.accessFineLocationAsk: String
+val accessFineLocationAsk: String
     get() = "ACCESS_FINE_LOCATION"
-val Fragment.writeExternalStorageAsk: String
+val writeExternalStorageAsk: String
     get() = "WRITE_EXTERNAL_STORAGE"

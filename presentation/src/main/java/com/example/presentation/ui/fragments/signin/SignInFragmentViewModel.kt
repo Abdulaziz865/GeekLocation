@@ -1,4 +1,4 @@
-package com.example.presentation.ui.fragments
+package com.example.presentation.ui.fragments.signin
 
 import androidx.lifecycle.ViewModel
 import com.example.domain.usecase.AuthorizeSharedPreferencesUseCase
