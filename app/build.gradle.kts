@@ -1,20 +1,23 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    //Kotlin Kapt
-    kotlin("kapt")
+    Plugins.apply {
+        id(application)
+        kotlin(android)
+        id(hilt)
+        kotlin(kapt)
+        id(googleServicesPlugin)
+    }
 }
 
 android {
-    namespace = "com.example.geeklocation"
-    compileSdk = 33
+    namespace = Config.applicationId
+    compileSdk = Config.compileSdk
 
     defaultConfig {
-        applicationId = "com.example.geeklocation"
-        minSdk = 25
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = Config.applicationId
+        minSdk = Config.minSdk
+        targetSdk = Config.compileSdk
+        versionCode = Config.versionCode
+        versionName = Config.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -32,11 +35,32 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = Config.jvmTarget
     }
+    buildFeatures.viewBinding = true
 }
 
 dependencies {
+
+    Dependencies.UiComponents.apply {
+        // AppCompat
+        implementation(appCompat)
+        // Material Design
+        implementation(material)
+        // UI Components
+        implementation(constraint)
+    }
+
+    Dependencies.ViewBinding.apply {
+        // ViewBindingPropertyDelegate
+        implementation(viewBinding)
+    }
+
+    Dependencies.Hilt.apply {
+        //Hilt
+        implementation(hilt)
+        kapt(hiltCompiler)
+    }
 
     implementation(project(":data"))
     implementation(project(":domain"))
