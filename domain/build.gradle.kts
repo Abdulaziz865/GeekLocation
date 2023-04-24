@@ -1,6 +1,21 @@
 plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    Plugins.apply {
+        id(javaLibrary)
+        id(kotlinJvm)
+    }
+}
+
+dependencies{
+
+    Dependencies.Coroutines.apply {
+        //Coroutines
+        implementation(coroutines)
+    }
+
+    Dependencies.Inject.apply {
+        //Inject
+        implementation(inject)
+    }
 }
 
 java {

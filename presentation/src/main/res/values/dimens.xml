@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_txt_sp_25">25sp</dimen>
+    <dimen name="margin_25_dp">25dp</dimen>
+    <dimen name="elevation_2_dp">2dp</dimen>
+    <dimen name="margin_top_20_dp">20dp</dimen>
+    <dimen name="margin_horizontal_15_dp">15dp</dimen>
+    <dimen name="fifteen_dp">15dp</dimen>
+    <dimen name="height_50_dp">55dp</dimen>
+    <dimen name="margin_bottom_15_dp">15dp</dimen>
+    <dimen name="zero_dp">0dp</dimen>
+    <dimen name="seven_dp">7dp</dimen>
+</resources>

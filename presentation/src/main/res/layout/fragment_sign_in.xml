@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".ui.fragments.signin.SignInFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_bottom_15_dp"
+            android:background="@drawable/logo"
+            app:layout_constraintBottom_toTopOf="@id/txt_start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_bottom_15_dp"
+            android:gravity="center"
+            android:text="@string/geeklocation"
+            android:textColor="@color/white"
+            android:textSize="@dimen/default_txt_sp_25"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginHorizontal="@dimen/margin_horizontal_15_dp"
+            android:layout_marginTop="@dimen/margin_top_20_dp"
+            android:background="@drawable/oval"
+            app:boxStrokeColor="@null"
+            app:errorTextAppearance="@style/WelcomeErrorAppearance"
+            app:layout_constraintTop_toBottomOf="@id/txt_start">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_sign_for_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/oval"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="@string/name"
+                android:inputType="text"
+                android:maxLength="14"
+                android:paddingStart="@dimen/fifteen_dp"
+                android:textColor="@color/white"
+                android:textColorHint="#C6CDD5"
+                app:layout_constraintTop_toBottomOf="@id/txt_start" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/txt_count_et"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="0/14"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@id/text_input_layout"
+            app:layout_constraintEnd_toEndOf="@id/text_input_layout"
+            app:layout_constraintTop_toTopOf="@id/text_input_layout" />
+
+        <Button
+            android:id="@+id/btn_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50_dp"
+            android:layout_marginHorizontal="@dimen/margin_horizontal_15_dp"
+            android:layout_marginTop="@dimen/margin_top_20_dp"
+            android:background="@drawable/button_oval"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/seven_dp"
+            android:background="@drawable/group"
+            android:elevation="@dimen/elevation_2_dp"
+            app:layout_constraintBottom_toBottomOf="@id/btn_sign_in"
+            app:layout_constraintEnd_toEndOf="@id/btn_sign_in"
+            app:layout_constraintEnd_toStartOf="@id/txt_sign_in"
+            app:layout_constraintTop_toTopOf="@id/btn_sign_in" />
+
+        <TextView
+            android:id="@+id/txt_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_25_dp"
+            android:elevation="@dimen/elevation_2_dp"
+            android:text="@string/google"
+            android:textColor="@color/black"
+            android:textSize="@dimen/default_txt_sp_25"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/btn_sign_in"
+            app:layout_constraintEnd_toEndOf="@id/btn_sign_in"
+            app:layout_constraintStart_toStartOf="@id/btn_sign_in"
+            app:layout_constraintTop_toTopOf="@id/btn_sign_in" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

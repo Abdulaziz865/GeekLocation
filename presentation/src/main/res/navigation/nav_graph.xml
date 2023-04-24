@@ -3,11 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph.xml"
-    app:startDestination="@id/googleMapFragment">
+    app:startDestination="@id/signInFragment">
+
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.presentation.ui.fragments.signin.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" />
 
     <fragment
         android:id="@+id/googleMapFragment"
-        android:name="com.example.presentation.ui.fragments.GoogleMapFragment"
+        android:name="com.example.presentation.ui.fragments.home.GoogleMapFragment"
         android:label="fragment_google_map"
         tools:layout="@layout/fragment_google_map" />
 </navigation>
