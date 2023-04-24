@@ -29,7 +29,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
 
@@ -39,7 +38,9 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             try {
                 val account = task.getResult(ApiException::class.java)
                 if (account != null) {
-                    account.idToken?.let { firebaseAuthWithGoogle(it) }
+                    account.idToken?.let {
+                        firebaseAuthWithGoogle(it)
+                    }
                 }
             } catch (e: ApiException) {
                 Toast.makeText(
@@ -72,11 +73,10 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (s?.length != 0){
+                if (s?.length != 0) {
                     binding.txtCountEt.visibility = View.VISIBLE
                     binding.txtCountEt.text = "${s?.length.toString()}/14"
-                }
-                else{
+                } else {
                     binding.txtCountEt.visibility = View.GONE
                 }
             }
@@ -89,14 +89,9 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             if (etName.isNotEmpty()) {
                 signInWithGoogle()
             } else {
-
+                Toast.makeText(requireContext(), "Empty!!!", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun signInWithGoogle() {
-        val signInClient = getClient()
-        launcher.launch(signInClient.signInIntent)
     }
 
     private fun getClient(): GoogleSignInClient {
@@ -106,6 +101,11 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             .requestEmail()
             .build()
         return GoogleSignIn.getClient(requireContext(), gso)
+    }
+
+    private fun signInWithGoogle() {
+        val signInClient = getClient()
+        launcher.launch(signInClient.signInIntent)
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {

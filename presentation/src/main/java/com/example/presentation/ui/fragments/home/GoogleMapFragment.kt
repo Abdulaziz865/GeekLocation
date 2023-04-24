@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
@@ -36,14 +37,27 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCallback {
+class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCallback , GoogleMap.OnMarkerClickListener{
 
+    private lateinit var mMap: GoogleMap
+    private lateinit var lastLocation: Location
+    private lateinit var locationRequest: LocationRequest
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private val viewModel: GoogleMapViewModel by viewModels()
+    private val binding by viewBinding(FragmentGoogleMapBinding::bind)
+    private val gpsObserver = Observer<GpsStatus> { status ->
+        updateGpsCheckUI(status)
+    }
+    companion object {
+        private const val LOCATION_REQUEST_CODE = 1
+    }
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
 
@@ -174,18 +188,10 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
                         .show()
                 }
                 else -> {
-
+                    initialize()
                 }
             }
         }
-    private lateinit var locationRequest: LocationRequest
-    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
-    private val viewModel: GoogleMapViewModel by viewModels()
-    private val binding by viewBinding(FragmentGoogleMapBinding::bind)
-    private val gpsObserver = Observer<GpsStatus> { status ->
-        updateGpsCheckUI(status)
-    }
-
     private fun updateGpsCheckUI(status: GpsStatus) = with(binding) {
         when (status) {
             is GpsStatus.Enabled -> {
@@ -223,13 +229,30 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
         val mapFragment = childFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
 
         mapFragment.getMapAsync {
-            val karabalta = LatLng(/* latitude = */ 42.82112116502111, /* longitude = */
-                73.84416404971903
-            )
-            it.addMarker(
-                MarkerOptions().position(karabalta).title(getString(R.string.kara_balta_tostring))
-            )
-            it.moveCamera(CameraUpdateFactory.newLatLngZoom(karabalta, 13f))
+            mMap = it
+            mMap.uiSettings.isZoomControlsEnabled = true
+            mMap.setOnMarkerClickListener(this)
+
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_REQUEST_CODE
+                )
+                return@getMapAsync
+            }
+            mMap.isMyLocationEnabled = true
+            fusedLocationProviderClient?.lastLocation?.addOnSuccessListener(requireActivity()) { location ->
+                if (location != null) {
+                    lastLocation = location
+                    val currentLatLong = LatLng(location.latitude, location.longitude)
+                    placeMarkerOnMap(currentLatLong)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLong, 13f))
+                }
+            }
         }
     }
 
@@ -291,8 +314,13 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
         }
     }
 
-    override fun onMapReady(map: GoogleMap) {
+    override fun onMapReady(googleMap: GoogleMap) {
+    }
 
+    private fun placeMarkerOnMap(currentLatLong: LatLng) {
+        val markerOptions = MarkerOptions().position(currentLatLong)
+        markerOptions.title("Я")
+        mMap.addMarker(markerOptions)
     }
 
     private fun requestStoragePermission() {
@@ -302,4 +330,6 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
             )
         )
     }
+
+    override fun onMarkerClick(p0: Marker) = false
 }

@@ -22,7 +22,15 @@
           }
         },
         {
-          "client_id": "64319960618-p17r8haqhi29uifemmqgga3b3hc0vfsm.apps.googleusercontent.com",
+          "client_id": "64319960618-p7q4scl4857mffiraelubtutn2ie6pdj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.geeklocation",
+            "certificate_hash": "78f0648b204325f413b14a1f87a32586d1a1b9b9"
+          }
+        },
+        {
+          "client_id": "64319960618-8v6uv97ksdlloeodmintrvvrm2verqhf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +43,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "64319960618-p17r8haqhi29uifemmqgga3b3hc0vfsm.apps.googleusercontent.com",
+              "client_id": "64319960618-8v6uv97ksdlloeodmintrvvrm2verqhf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
