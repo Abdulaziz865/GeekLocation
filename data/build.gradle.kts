@@ -53,5 +53,8 @@ dependencies {
         kapt(hiltCompiler)
     }
 
+    //Location Services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     implementation(project(":domain"))
 }

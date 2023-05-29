@@ -19,4 +19,8 @@
     <string name="color_settings_button">#F50057</string>
     <string name="empty_edit_text">Заполните шкалу</string>
     <string name="fatal_exception_authorize">An error has occurred, please try again later</string>
+    <string name="normal_map">Normal_map</string>
+    <string name="hybrid_map">Hybrid_map</string>
+    <string name="satellite_map">Satellite_map</string>
+    <string name="terrain_map">Terrain_map</string>
 </resources>
