@@ -20,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -55,6 +55,16 @@ dependencies {
 
     //Location Services
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    Dependencies.Firebase.apply {
+        implementation(platform(bom))
+        implementation(authKtx)
+        implementation(playServicesAuth)
+        implementation(measurementApi)
+    }
+
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.6.0")
 
     implementation(project(":domain"))
 }
