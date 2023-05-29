@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         Thread.sleep(2000)
         setContentView(R.layout.activity_main)
         setupNavigation()
-        this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
     private fun setupNavigation() {
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         navController = navHostFragment.navController
 
-        when (viewModel.getDataAuthorize(getString(R.string.isAuthorize))) {
+        when (viewModel.authorize) {
             true -> {
                 navController.navigate(R.id.googleMapFragment)
             }

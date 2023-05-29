@@ -1,12 +1,26 @@
 package com.example.presentation.ui.fragments.signin
 
 import androidx.lifecycle.ViewModel
-import com.example.domain.usecase.AuthorizeSharedPreferencesUseCase
+import androidx.lifecycle.viewModelScope
+import com.example.domain.usecase.AddLocationUseCase
+import com.example.domain.usecase.AuthorizeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SignInFragmentViewModel @Inject constructor(private val authorizeSharedPreferencesUseCase: AuthorizeSharedPreferencesUseCase): ViewModel() {
+class SignInFragmentViewModel @Inject constructor(
+    private val authorizeUseCase: AuthorizeUseCase,
+    private val addLocationUseCase: AddLocationUseCase
+): ViewModel() {
 
-    fun saveDataAuthorize(KEY_NAME: String, value: Boolean) = authorizeSharedPreferencesUseCase.saveDataAuthorize(KEY_NAME, value )
+    var authorize: Boolean
+        get() = authorizeUseCase.authorize
+        set(value) {
+            authorizeUseCase.authorize = value
+        }
+
+    fun addLocation(lat: Double, lng: Double) = viewModelScope.launch {
+        addLocationUseCase.addLocation(lat, lng)
+    }
 }
