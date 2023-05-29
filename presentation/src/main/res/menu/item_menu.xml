@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/theme_map"
+        android:title="Тема"
+        android:icon="@drawable/ic_color_theme"
+        />
+
+    <item
+        android:id="@+id/distance"
+        android:title="Расстояние"
+        android:icon="@drawable/ic_social_distance"
+        />
+
+    <item android:title="Карта">
+        <menu>
+            <item
+                android:id="@+id/type_map"
+                android:icon="@drawable/ic_type_map"
+                android:title="Тип Карты" />
+
+            <item
+                android:id="@+id/favorites"
+                android:icon="@drawable/ic_favorites"
+                android:title="Избранная метка" />
+
+            <item
+                android:id="@+id/full_screen"
+                android:icon="@drawable/ic_fullscreen"
+                android:title="Полный экран" />
+        </menu>
+    </item>
+
+    <item android:title="Профиль">
+        <menu>
+            <item
+                android:id="@+id/settings"
+                android:icon="@drawable/ic_settings"
+                android:title="Настройки" />
+            <item
+                android:id="@+id/sign_out"
+                android:icon="@drawable/ic_exit"
+                android:title="Выйти" />
+        </menu>
+    </item>
+
+</menu>

@@ -4,7 +4,7 @@
     <string name="geeklocation">Добро пожаловать в \n GeekLocation</string>
     <string name="google">Google</string>
     <string name="title_activity_maps">MapsActivity</string>
-    <string name="default_web_client_id">64319960618-p17r8haqhi29uifemmqgga3b3hc0vfsm.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">33136855257-bddsthrj7kmph4icj044jp4kmsus49v2.apps.googleusercontent.com</string>
     <string name="gps_status_enabled">"GPS is Enabled"</string>
     <string name="gps_status_disabled">"GPS is Disabled"</string>
     <string name="isAuthorize">isAuthorize</string>
@@ -19,4 +19,8 @@
     <string name="color_settings_button">#F50057</string>
     <string name="empty_edit_text">Заполните шкалу</string>
     <string name="fatal_exception_authorize">An error has occurred, please try again later</string>
+    <string name="permission_status_granted">permission status granted</string>
+    <string name="permission_status_denied">permission status denied</string>
+    <string name="permission_status_blocked">permission status blocked</string>
+    <string name="text_permission_request">Чтобы отправить \n ближайшее место или своё \n местоположение, разрешите \n GeekLocation доступ к \n местоположению.</string>
 </resources>
