@@ -9,7 +9,7 @@ interface SignInRepository {
     fun getAuthState(): Flow<Either<String, String>>
 
     suspend fun firebaseSignIn(): Flow<Either<String, String>>
-
-    suspend fun firebaseSignOut(): Flow<Either<String, String>>
+//
+//    suspend fun firebaseSignOut(): Flow<Either<String, String>>
 
 }
