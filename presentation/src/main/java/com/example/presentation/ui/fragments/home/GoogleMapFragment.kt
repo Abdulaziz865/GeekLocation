@@ -16,7 +16,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -89,10 +88,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
             if (accessFineLocation == true) {
                 val gpsEnabled =
                     requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                if (gpsEnabled.isProviderEnabled(LocationManager.GPS_PROVIDER) && ContextCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
+                if (gpsEnabled.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
                 }
             }
@@ -255,8 +251,6 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
             btnOk.setOnClickListener {
                 if (ContextCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     dialog.dismiss()
@@ -360,7 +354,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
     private fun requestStoragePermission() {
         requestPermission.launch(
             arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
     }
@@ -395,12 +389,6 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
 
     private fun checkUserLocation() {
         val userEmail = auth?.currentUser?.email.toString()
-        db.collection("users").whereEqualTo("email", userEmail).get()
-            .addOnSuccessListener { docEnabled ->
-                if (docEnabled.size() == 0) {
-                    addNewUserLocation()
-                }
-                else {
                     val db = FirebaseFirestore.getInstance()
                     val codeRef = db.collection("users")
                     codeRef.whereEqualTo("email", userEmail).get().addOnCompleteListener { task ->
@@ -413,19 +401,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
                             }
                         }
                     }
-                }
-            }
-    }
 
-    private fun addNewUserLocation() {
-        val userEmail = auth?.currentUser?.email.toString()
-        val coordinates = hashMapOf(
-            "email" to userEmail, "latitude" to latitudeLiveData, "longitude" to longitudeLiveData
-        )
-
-        db.collection("users").add(coordinates).addOnSuccessListener {
-            Toast.makeText(requireContext(), "Координаты добавлены", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun fetchLocationCoordinates() {
