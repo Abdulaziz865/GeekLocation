@@ -1,14 +1,7 @@
 package com.example.data.repositories
 
-import com.example.domain.models.LocationModel
 import com.example.domain.repositories.LocationRepository
-import com.example.domain.utils.Either
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestoreException
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 

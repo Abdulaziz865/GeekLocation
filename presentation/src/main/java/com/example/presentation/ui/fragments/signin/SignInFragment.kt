@@ -1,5 +1,6 @@
 package com.example.presentation.ui.fragments.signin
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.example.domain.models.UsersModel
+import com.example.domain.models.UserModel
 import com.example.presentation.R
 import com.example.presentation.databinding.FragmentSignInBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -41,6 +42,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
                     }
                 }
             } catch (e: ApiException) {
+                progressDialog.dismiss()
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.fatal_exception_authorize),
@@ -48,6 +50,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
                 ).show()
             }
         }
+    private lateinit var progressDialog: ProgressDialog
     private lateinit var auth: FirebaseAuth
     private val viewModel: SignInFragmentViewModel by viewModels()
     private val db = Firebase.firestore
@@ -60,6 +63,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun initialize() {
+        progressDialog = ProgressDialog(requireContext())
         auth = Firebase.auth
         textChangedListener()
     }
@@ -68,6 +72,9 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         binding.btnSignIn.setOnClickListener {
             val etName = binding.etSignForName.text.toString().trim()
             if (etName.isNotEmpty()) {
+                progressDialog.setCancelable(false)
+                progressDialog.setMessage("Пожалуйста подождите.")
+                progressDialog.show()
                 signInWithGoogle()
             } else {
                 Toast.makeText(requireContext(), "Empty!!!", Toast.LENGTH_SHORT).show()
@@ -103,8 +110,9 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
                 Toast.makeText(requireContext(), "Google signIn done", Toast.LENGTH_SHORT).show()
-                checkUserEnabled()
+                checkUserAvailable()
             } else {
+                progressDialog.dismiss()
                 viewModel.authorize = false
                 Toast.makeText(
                     requireContext(),
@@ -115,18 +123,17 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         }
     }
 
-    private fun checkUserEnabled() {
+    private fun checkUserAvailable() {
         val userEmail = auth.currentUser?.email.toString()
         db.collection("users")
             .whereEqualTo("email", userEmail)
             .get()
-            .addOnSuccessListener {
-                if (it.size() == 0) {
+            .addOnSuccessListener { document ->
+                if (document.size() == 0) {
                     addNewUserInFirebase()
-                }
-                else {
-                    it.documents.forEach {
-                        val doc = it.toObject(UsersModel::class.java)
+                } else {
+                    document.documents.forEach {
+                        val doc = it.toObject(UserModel::class.java)
                         if (userEmail == doc?.email.toString()) {
                             Toast.makeText(
                                 requireContext(), "вы вошли как: ${doc?.name}", Toast.LENGTH_SHORT
@@ -135,20 +142,45 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
                     }
                     viewModel.authorize = true
                     findNavController().navigate(R.id.googleMapFragment)
+                    progressDialog.dismiss()
                 }
             }
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+//                viewModel.userAvailable.collect{
+//                    when(it){
+//                        is UIState.Error -> {
+//                            Log.e("check", "error")
+//                        }
+//                        is UIState.Loading -> {
+//                            Log.e("check", "loading")
+//                        }
+//                        is UIState.Success -> {
+//                            if (!it.data){
+//                                Log.e("check", "0")
+//                                addNewUserInFirebase()
+//                            }
+//                            else {
+//                                Log.e("check", "1")
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     private fun addNewUserInFirebase() {
         val userName = binding.etSignForName.text.toString().trim()
         val userEmail = auth.currentUser?.email.toString()
-        val model = UsersModel(userName, userEmail)
+        val model = UserModel(userName, userEmail)
 
         db.collection("users").add(model).addOnSuccessListener {
             Toast.makeText(requireContext(), "Вы зарегистрированы", Toast.LENGTH_SHORT).show()
             Log.e("addUser", "adding user: $userName , $userEmail")
             viewModel.authorize = true
             findNavController().navigate(R.id.googleMapFragment)
+            progressDialog.dismiss()
         }.addOnFailureListener {
             Log.e("addUser", it.localizedMessage ?: "error")
         }
