@@ -26,15 +26,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.example.domain.models.LocationModel
-import com.example.domain.models.UserCoordinates
-import com.example.domain.models.UsersModel
+import com.example.domain.models.UserModel
 import com.example.presentation.R
 import com.example.presentation.databinding.FragmentGoogleMapBinding
-import com.example.presentation.extensions.accessFineLocationAsk
-import com.example.presentation.extensions.bothAsk
-import com.example.presentation.extensions.nullAsk
-import com.example.presentation.extensions.writeExternalStorageAsk
 import com.example.presentation.utils.GpsStatus
 import com.example.presentation.utils.PermissionStatus
 import com.google.android.gms.common.api.ApiException
@@ -66,8 +60,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
     private lateinit var mMap: GoogleMap
     private var dialogShowed = false
     private var lastLocation: Location? = null
-
-    //    private var mark: Marker? = null
+    private val userMarkers = mutableMapOf<String?, Marker?>()
     private lateinit var locationRequest: LocationRequest
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private val viewModel: GoogleMapViewModel by viewModels()
@@ -80,12 +73,11 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
     private val permissionObserver = Observer<PermissionStatus> { status ->
         updatePermissionCheckUI(status)
     }
-    private val locationObserver = Observer<UserCoordinates> { status ->
-        latitudeLiveData = status.latitude!!
-        longitudeLiveData = status.longitude!!
+    private val locationObserver = Observer<UserModel> { status ->
+        status.latitude?.let { latitudeLiveData = it }
+        status.longitude?.let { longitudeLiveData = it }
         Log.e("location", latitudeLiveData.toString())
         Log.e("location", longitudeLiveData.toString())
-//        saageg(status)
         checkUserLocation()
         fetchLocationCoordinates()
     }
@@ -93,12 +85,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
 
-            var isDenied = false
-            var isDontAsk = nullAsk
-            var isBoath = false
-
             val accessFineLocation = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
-            val writeExternalStorage = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE]
 
             if (accessFineLocation == true) {
                 val gpsEnabled =
@@ -107,8 +94,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
                         requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-//                    binding.btnStart.isVisible = false
-//                    binding.closerCardView.isVisible = false
+
                 }
             }
             else {
@@ -117,69 +103,17 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
                     )
                 ) {
                     updatePermissionCheckUI(PermissionStatus.Denied())
-                    isDenied = true
-                }
-                else {
+                } else {
                     updatePermissionCheckUI(PermissionStatus.Blocked())
-                    isDontAsk = accessFineLocationAsk
-                    isBoath = true
-                }
-            }
-
-            if (writeExternalStorage == true) {
-                val gpsEnabled =
-                    requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                if (gpsEnabled.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                    && ContextCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-//                    binding.btnStart.isVisible = false
-//                    binding.closerCardView.isVisible = false
-                }
-            }
-            else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                ) {
-                    isDenied = true
-                }
-                else {
-                    isDontAsk = writeExternalStorageAsk
-
-                    if (isBoath) {
-                        isDontAsk = bothAsk
-                    }
-                }
-            }
-
-            if (isDenied) {
-                startDialog()
-            }
-
-            when (isDontAsk) {
-                bothAsk -> {
-                    isEnabledDontAskPermission("Включите разрешение на \"Местоположение и Доступ к Медиа\" перейдя в настройки")
-                }
-                accessFineLocationAsk -> {
-                    isEnabledDontAskPermission("Включите разрешение на \"Местоположение\" перейдя в настройки")
-                }
-                writeExternalStorageAsk -> {
-                    isEnabledDontAskPermission("Включите разрешение на \"Доступ к Медиа\" перейдя в настройки")
-                }
-                else -> {
-                    initialize()
                 }
             }
         }
-    private fun updateGpsCheckUI(status: GpsStatus) = with(binding) {
+
+    private fun updateGpsCheckUI(status: GpsStatus) {
         when (status) {
             is GpsStatus.Enabled -> {
                 if (ContextCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                        requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     Log.e("gpsEnabled", "ON")
@@ -295,29 +229,9 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
         }
     }
 
-    private fun saageg(status: LocationModel) {
-//        if (mark == null) {
-//            mark = mMap.addMarker(
-//                MarkerOptions().title("LiveData").snippet("${status.latitude}, ${status.longitude}")
-//                    .position(LatLng(status.latitude, status.longitude))
-//            )!!
-//        } else {
-//            mark!!.snippet = "${status.latitude}, ${status.longitude}"
-//            mark!!.position = LatLng(status.latitude, status.longitude)
-//        }
-    }
-
     private fun setupListener() = with(binding) {
         menu.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
-        }
-        navigationView.setNavigationItemSelectedListener {
-            when(it.itemId){
-                R.id.type_map -> {
-
-                }
-            }
-            true
         }
     }
 
@@ -444,12 +358,6 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
     override fun onMapReady(googleMap: GoogleMap) {
     }
 
-    private fun placeMarkerOnMap(currentLatLong: LatLng) {
-        val markerOptions = MarkerOptions().position(currentLatLong)
-        markerOptions.title(currentLatLong.toString())
-        mMap.addMarker(markerOptions)
-    }
-
     private fun requestStoragePermission() {
         requestPermission.launch(
             arrayOf(
@@ -463,7 +371,7 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
     private fun checkUserAccount() {
         db.collection("users").addSnapshotListener { documents, errors ->
             documents?.documents?.forEach {
-                val doc = it.toObject(UsersModel::class.java)
+                val doc = it.toObject(UserModel::class.java)
                 val user = auth?.currentUser
                 if (user?.email.toString() == doc?.email) {
                     binding.nameUser.text = doc.name
@@ -474,89 +382,29 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
 
     private fun findMyLocation() {
         if (ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            mMap.isMyLocationEnabled = true
-//            mMap.isMyLocationEnabled = true
-//            fusedLocationProviderClient?.lastLocation?.addOnSuccessListener(requireActivity()) { location ->
-//                if (location != null) {
-//                    lastLocation = location
-//                    val currentLatLong = LatLng(location.latitude, location.longitude)
-//                    placeMarkerOnMap(currentLatLong)
-//                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLong, 13f))
-//                }
-//            }
         } else {
-            return
+            mMap.isMyLocationEnabled = true
         }
     }
 
     private fun checkUserLocation() {
         val userEmail = auth?.currentUser?.email.toString()
-        db.collection("coordinates").whereEqualTo("email", userEmail).get()
+        db.collection("users").whereEqualTo("email", userEmail).get()
             .addOnSuccessListener { docEnabled ->
                 if (docEnabled.size() == 0) {
                     addNewUserLocation()
-                } else {
-//                    val db = FirebaseFirestore.getInstance()
-//                    val codeRef = db.collection("coordinates")
-//                    codeRef.whereEqualTo("email", userEmail).get()
-//                        .addOnCompleteListener { task ->
-//                            if (task.isSuccessful) {
-//                                for (document in task.result) {
-//                                    val update: MutableMap<String, Any> = HashMap()
-//                                    update["latitude"] = latitudeLiveData
-//                                    update["longitude"] = longitudeLiveData
-//                                    codeRef.document(document.id).set(update, SetOptions.merge())
-//                                }
-//                            }
-//                        }
                 }
-            }
-    }
-
-    private fun addNewUserLocation() {
-        val userEmail = auth?.currentUser?.email.toString()
-        val coordinates = hashMapOf(
-            "email" to userEmail, "latitude" to latitudeLiveData, "longitude" to longitudeLiveData
-        )
-//        viewModel.addLocation(latitudeLiveData, longitudeLiveData)
-//        db.collection("coordinates").add(coordinates).addOnSuccessListener {
-//            Toast.makeText(requireContext(), "Координаты добавлены", Toast.LENGTH_SHORT).show()
-//        }
-    }
-
-    private fun fetchLocationCoordinates() {
-        Log.e("coor", "rip")
-        val userEmail = auth?.currentUser?.email.toString()
-        db.collection("coordinates").get().addOnSuccessListener { value ->
-            value?.documents?.forEach {
-                Log.e("coor", "cycle")
-                var mark: Marker? = null
-                val doc = it.toObject(UserCoordinates::class.java)
-//                if (mark) {
-                val db = FirebaseFirestore.getInstance()
-                val codeRef = db.collection("coordinates")
-                codeRef.whereEqualTo("email", userEmail).get()
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            for (document in task.result) {
-                                val update: MutableMap<String, Any> = HashMap()
-                                update["markerEnabled"] = true
-                                codeRef.document(document.id).set(update, SetOptions.merge())
-                            }
-                        }
-                    }
-                mark = mMap.addMarker(
-                    MarkerOptions().title("LiveData").snippet("${doc?.latitude}, ${doc?.longitude}")
-                        .position(LatLng(doc?.latitude!!, doc.longitude!!))
-                )!!
-//                } else {
-                codeRef.whereEqualTo("email", userEmail).get()
-                    .addOnCompleteListener { task ->
+                else {
+                    val db = FirebaseFirestore.getInstance()
+                    val codeRef = db.collection("users")
+                    codeRef.whereEqualTo("email", userEmail).get().addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             for (document in task.result) {
                                 val update: MutableMap<String, Any> = HashMap()
@@ -566,9 +414,43 @@ class GoogleMapFragment : Fragment(R.layout.fragment_google_map), OnMapReadyCall
                             }
                         }
                     }
-                mark.snippet = "${doc.latitude}, ${doc.longitude}"
-                mark.position = LatLng(doc.latitude!!, doc.longitude!!)
-//                }
+                }
+            }
+    }
+
+    private fun addNewUserLocation() {
+        val userEmail = auth?.currentUser?.email.toString()
+        val coordinates = hashMapOf(
+            "email" to userEmail, "latitude" to latitudeLiveData, "longitude" to longitudeLiveData
+        )
+
+        db.collection("users").add(coordinates).addOnSuccessListener {
+            Toast.makeText(requireContext(), "Координаты добавлены", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun fetchLocationCoordinates() {
+        Log.e("coor", "rip")
+        val usersCollection = db.collection("users")
+        usersCollection.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                for (document in snapshot.documents) {
+                    val user = document.toObject(UserModel::class.java)
+                    if (userMarkers.containsKey(user?.email)) {
+                        val marker = userMarkers[user?.email]
+                        marker?.position = LatLng(user?.latitude!!, user.longitude!!)
+                    } else {
+                        val marker = mMap.addMarker(
+                            MarkerOptions().position(LatLng(user?.latitude!!, user.longitude!!))
+                                .title(user.name)
+                        )
+                        userMarkers[user.email] = marker
+                    }
+                }
             }
         }
     }

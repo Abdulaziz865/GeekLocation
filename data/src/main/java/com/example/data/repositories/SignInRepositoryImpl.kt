@@ -2,18 +2,16 @@ package com.example.data.repositories
 
 import com.example.domain.repositories.SignInRepository
 import com.example.domain.utils.Either
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class SignInRepositoryImpl(
+class SignInRepositoryImpl(private val auth: FirebaseAuth) : SignInRepository {
 
-) : SignInRepository {
-
-    override fun getAuthState() =
-        flow<Either<String, String>> {
+    override fun getAuthState() = flow<Either<String, String>> {
 
         }.flowOn(Dispatchers.IO).catch {
 
@@ -25,7 +23,7 @@ class SignInRepositoryImpl(
         }.flowOn(Dispatchers.IO).catch {
 
         }
-
+//
 //    override suspend fun firebaseSignOut(): Flow<Either<String, String>> {
 //
 //    }

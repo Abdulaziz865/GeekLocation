@@ -6,14 +6,13 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
-import com.example.domain.models.LocationModel
-import com.example.domain.models.UserCoordinates
+import com.example.domain.models.UserModel
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 
-class LocationLiveData(private val context: Context) : LiveData<UserCoordinates>() {
+class LocationLiveData(private val context: Context) : LiveData<UserModel>() {
 
     private var fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
@@ -73,18 +72,15 @@ class LocationLiveData(private val context: Context) : LiveData<UserCoordinates>
         }
     }
 
-    /**
-     * If we've received a location update, this function will be called.
-     */
     private fun setLocationData(location: Location) {
-        value = UserCoordinates(location.latitude, location.longitude)
+        value = UserModel(null,null, location.latitude, location.longitude)
     }
 
     companion object {
-        val ONE_MINUTE: Long = 5000
+        private const val ONE_MINUTE: Long = 10000
         val locationRequest: LocationRequest = LocationRequest.create().apply {
             interval = ONE_MINUTE
-            fastestInterval = ONE_MINUTE/4
+            fastestInterval = ONE_MINUTE / 4
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
     }
